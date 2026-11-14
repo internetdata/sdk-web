@@ -1,0 +1,70 @@
+{
+    "name": "internetdata-web",
+    "version": "1.0.0",
+    "description": "Official browser client library for the InternetData API. Look up IP addresses, ASes and domains from a page or a browser extension.",
+    "type": "module",
+    "packageManager": "pnpm@12.12.1",
+    "license": "MIT",
+    "homepage": "https://internetdata.io",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/internetdata/sdk-web.git"
+    },
+    "bugs": {
+        "url": "https://github.com/internetdata/sdk-web/issues"
+    },
+    "keywords": [
+        "ip-intelligence",
+        "ip-lookup",
+        "ip-geolocation",
+        "asn",
+        "asn-lookup",
+        "domain-lookup",
+        "dns",
+        "whois",
+        "ip-data",
+        "bogon",
+        "vpn",
+        "proxy",
+        "hosting",
+        "browser",
+        "browser-extension",
+        "client-side",
+        "esm"
+    ],
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "sideEffects": false,
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "dependencies": {
+        "lru-cache": "^11.0.2",
+        "p-limit": "^6.2.0",
+        "p-retry": "^8.0.0"
+    },
+    "devDependencies": {
+        "@hey-api/openapi-ts": "^0.99.0",
+        "@mslmio/eslint-config": "^1.1.0",
+        "eslint": "^10.10.0",
+        "playwright-core": "1.62.1",
+        "typescript": "^6.0.3"
+    },
+    "scripts": {
+        "build": "rm -rf dist && openapi-ts && tsc",
+        "lint": "eslint",
+        "test": "pnpm run build && node --test test/*.test.mjs",
+        "test:browser": "pnpm run build && node test/browser/smoke.mjs",
+        "prepublishOnly": "pnpm run build",
+        "generate": "openapi-ts"
+    }
+}
