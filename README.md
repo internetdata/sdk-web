@@ -7,9 +7,9 @@ The official browser client library for the [InternetData](https://internetdata.
 
 It looks up what every InternetData database says about an IP address, an AS or a domain.
 
-**An API key in a web page is public.** Anyone who opens the page can read it from the page's source or its network requests and use it as you would: spend your plan's lookups and, if the key may download databases, download every database your organization is licensed for. In a page, use no key, or call the API from your own server and hand the page its answer. A key belongs only where the person it belongs to is the only one who can read it, such as their own browser extension or an internal tool, and there a key that may only look up.
-
 ## Getting Started
+
+**An API key in a web page is public.** Anyone who opens the page can read it from the page's source or its network requests and use it as you would: spend your plan's lookups and, if the key may download databases, download every database your organization is licensed for. In a page, use no key, or call the API from your own server and hand the page its answer. A key belongs only where the person it belongs to is the only one who can read it, such as their own browser extension or an internal tool, and there a key that may only look up.
 
 ```bash
 npm install internetdata-web
