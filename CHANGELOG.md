@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff.
 
+## 1.1.0 - 2026-11-15
+
+### Features
+
+- Read hosted_domains' 10 most popular domains ([`a7b11c1`](https://github.com/internetdata/sdk-web/commit/a7b11c11bf3ac1afb1f4d039c32a954d0ff1ec3d))
+
 ## 1.0.0 - 2026-11-14
 
 ### Features
