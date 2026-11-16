@@ -291,7 +291,7 @@ test('myEntitlement reports the plan and the usage', async () => {
     const t = countingFetch({
         org_id: '85bb51e4-2eb6-4a31-8e4d-02ba8b98fe61',
         apikey: { id: '0ab424cc-7619-4dad-b027-afacdc2cedb0', expires: null, allowed_cidrs: [] },
-        plan: { key: 'max', tier: 'max' },
+        plan: { key: 'max', name: 'Max', tier: 'max' },
         usage: {
             requests: 580, quota: 5000000, hard_limit: null,
             window_start: '2026-09-04T07:00:00Z', window_end: '2026-10-04T07:00:00Z',
@@ -312,7 +312,7 @@ test('myEntitlement is not cached', async () => {
     const t = countingFetch({
         org_id: 'f32191d0-ef02-450e-a505-eb5814c35cab',
         apikey: { id: '10c2b437-3aa2-4a63-bd17-8e7c8c7f0def', expires: null, allowed_cidrs: [] },
-        plan: { key: 'free', tier: 'free' },
+        plan: { key: 'free', name: 'Unlimited', tier: 'free' },
         usage: {
             requests: 1, quota: 2, hard_limit: 2,
             window_start: '2026-09-01T00:00:00Z', window_end: '2026-10-01T00:00:00Z',
@@ -476,7 +476,7 @@ function pathRecordingFetch() {
                 : path.endsWith('entitlement')
                     ? {
                         org_id: 'o', apikey: { id: 'a', expires: null, allowed_cidrs: [] },
-                        plan: { key: 'max', tier: 'max' },
+                        plan: { key: 'max', name: 'Max', tier: 'max' },
                         usage: {
                             requests: 1, quota: 2, hard_limit: null,
                             window_start: '2026-10-01T00:00:00Z', window_end: '2026-11-01T00:00:00Z',

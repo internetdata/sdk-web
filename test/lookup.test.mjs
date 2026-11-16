@@ -23,7 +23,7 @@ const DOMAIN = data.lookup.find((c) => c.name === 'domain-unlimited-answer').bod
 const ENTITLEMENT = {
     org_id: '85bb51e4-2eb6-4a31-8e4d-02ba8b98fe61',
     apikey: { id: '0ab424cc-7619-4dad-b027-afacdc2cedb0', expires: null, allowed_cidrs: [] },
-    plan: { key: 'max', tier: 'max' },
+    plan: { key: 'max', name: 'Max', tier: 'max' },
     usage: {
         requests: 580, quota: 5000000, hard_limit: null,
         window_start: '2026-09-04T07:00:00Z', window_end: '2026-10-04T07:00:00Z',
