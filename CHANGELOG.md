@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff.
 
+## 1.2.0 - 2026-11-16
+
+### Features
+
+- Read an AS's rank, neighbors and hosted domains, and the plan's name ([`1cfff9d`](https://github.com/internetdata/sdk-web/commit/1cfff9d08cabcade04cec5eb69b2a657a29e08c1))
+
 ## 1.1.0 - 2026-11-15
 
 ### Features
