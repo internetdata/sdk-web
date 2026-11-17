@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff.
 
+## 1.3.0 - 2026-11-17
+
+### Features
+
+- Read cap_reached on a paid answer past its overage cap ([`d81f4e1`](https://github.com/internetdata/sdk-web/commit/d81f4e1a4016ef3986ce3630a1c5878de73337f7))
+
 ## 1.2.0 - 2026-11-16
 
 ### Features
