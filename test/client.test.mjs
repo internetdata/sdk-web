@@ -307,6 +307,26 @@ test('myEntitlement reports the plan and the usage', async () => {
     assert.equal(t.state.urls[0], '/api/v1/entitlement');
 });
 
+// A plan tier the API adds comes back as served rather than failing the call, so a
+// new plan needs no lockstep release. Held since the entitlement was first read;
+// pinned here until the shared corpus carries a case per response enum.
+test('a plan tier this release was not built with comes back as served', async () => {
+    const t = countingFetch({
+        org_id: 'o', apikey: { id: 'a', expires: null, allowed_cidrs: [] },
+        plan: { key: 'data', name: 'Data', tier: 'data' },
+        usage: {
+            requests: 1, quota: 2, hard_limit: null,
+            window_start: '2026-10-01T00:00:00Z', window_end: '2026-11-01T00:00:00Z',
+        },
+    });
+    const client = new InternetData({ fetch: t.fetch, apiKey: 'k' });
+    const plan = (await client.myEntitlement()).plan;
+    assert.equal(plan.tier, 'data');
+    assert.equal(plan.key, 'data');
+    assert.equal(plan.name, 'Data');
+    assert.equal(t.state.calls, 1);
+});
+
 // Usage is the whole point, so a cached answer is a wrong one within seconds.
 test('myEntitlement is not cached', async () => {
     const t = countingFetch({
