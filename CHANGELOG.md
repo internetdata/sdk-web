@@ -2,6 +2,13 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff.
 
+## 1.3.1 - 2026-11-18
+
+### Fixes
+
+- Re-pin the spec to 2026.11.17 as republished: KEY_OVER_HTTP on the account 403 ([`fcf90c1`](https://github.com/internetdata/sdk-web/commit/fcf90c17caed198e924919c8c683f60a0d40dc52))
+- Say ASNs, not ASes, in the package description ([`e97bac2`](https://github.com/internetdata/sdk-web/commit/e97bac2edcc4dddfbecd16fef1975e65bc93c210))
+
 ## 1.3.0 - 2026-11-17
 
 ### Features
