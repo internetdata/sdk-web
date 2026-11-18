@@ -673,3 +673,18 @@ function timeoutWarnings(t) {
     t.after(() => process.off('warning', listener));
     return seen;
 }
+
+// The shared corpus's entitlement cases, the only vocabulary calls this SDK makes:
+// each answer reads, and each `expect` path comes back as served.
+test('every entitlement vocabulary case in the corpus comes back as served', async () => {
+    const cases = data.vocabulary.cases.filter((c) => c.call === 'myEntitlement');
+    assert.ok(cases.length >= 2);
+    for (const { name, answer, expect } of cases) {
+        const t = countingFetch(answer);
+        const got = await new InternetData({ fetch: t.fetch, apiKey: 'k' }).myEntitlement();
+        for (const [path, want] of Object.entries(expect)) {
+            assert.equal(path.split('.').reduce((at, step) => at?.[step], got), want, `${name}: ${path}`);
+        }
+        assert.equal(t.state.calls, 1, name);
+    }
+});
