@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff.
 
+## 1.3.2 - 2026-11-19
+
+### Fixes
+
+- Cache a spent trial's or a reached cap's answer for a minute at most ([`29f4b80`](https://github.com/internetdata/sdk-web/commit/29f4b80b2d783f201e3c843e7b7d00e503c61f7c))
+
 ## 1.3.1 - 2026-11-18
 
 ### Fixes
