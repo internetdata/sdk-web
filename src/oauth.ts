@@ -79,9 +79,8 @@ export interface TokenResponse {
  * authorization server is: `https://api.internetdata.io` signs in at
  * `https://internetdata.io`.
  *
- * Every call takes a client ID: one issued on request from
- * support@internetdata.io, or the https URL of a client metadata document the app
- * serves. None of these requests carries the client's API key, and none needs one.
+ * Every call takes a client ID, the https URL of a client metadata document the app
+ * serves, which any app can use without asking us first. None of these requests carries the client's API key, and none needs one.
  */
 export class OauthApi {
     constructor(
