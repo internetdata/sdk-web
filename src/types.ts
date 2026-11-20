@@ -1,15 +1,17 @@
 import type {
     AbuseContact, Asn, AsnHostedDomains, AsnLookupResponse, AsnPrefix, BitTorrentDetail, CarrierDetail, ClassDetail, Company,
-    DisposableDetail, DnsAddressRecord, DnsCnameRecord, DnsMxRecord, DnsNsRecord, DnsResolverDetail, DomainDns,
-    DomainIpRange, DomainIpRanges, DomainLookupResponse, Entitlement, EntitlementApikey, EntitlementPlan,
+    CohostedDomains, DisposableDetail, DnsAddressRecord, DnsCnameRecord, DnsMxRecord, DnsNsRecord, DnsResolverDetail,
+    DomainBacklinks, DomainDns, DomainHost, DomainIpRange, DomainIpRanges, DomainLookupResponse, DomainRedirects,
+    DomainWeb, DomainWebLinks, Entitlement, EntitlementApikey, EntitlementPlan,
     EntitlementUsage, HostedDomains, Location, LookupResponse, ProxyDetail, PubproxyDetail, Rwhois,
     SatelliteDetail, SmtpDetail, SshDetail, WebDetail, Whois,
 } from './generated/types.gen.js';
 
 export type {
     AbuseContact, Asn, AsnHostedDomains, AsnLookupResponse, AsnPrefix, BitTorrentDetail, CarrierDetail, ClassDetail, Company,
-    DisposableDetail, DnsAddressRecord, DnsCnameRecord, DnsMxRecord, DnsNsRecord, DnsResolverDetail, DomainDns,
-    DomainIpRange, DomainIpRanges, DomainLookupResponse, Entitlement, EntitlementApikey, EntitlementPlan,
+    CohostedDomains, DisposableDetail, DnsAddressRecord, DnsCnameRecord, DnsMxRecord, DnsNsRecord, DnsResolverDetail,
+    DomainBacklinks, DomainDns, DomainHost, DomainIpRange, DomainIpRanges, DomainLookupResponse, DomainRedirects,
+    DomainWeb, DomainWebLinks, Entitlement, EntitlementApikey, EntitlementPlan,
     EntitlementUsage, HostedDomains, Location, LookupResponse, ProxyDetail, PubproxyDetail, Rwhois,
     SatelliteDetail, SmtpDetail, SshDetail, WebDetail, Whois,
 };
@@ -141,6 +143,16 @@ export interface DomainResult {
     ipRanges?: DomainIpRanges;
     /** `{}` when `isDisposable` is false. */
     disposable?: DisposableDetail;
+    /** The network announcing each address in `dns.a`, then `dns.aaaa`. */
+    hosting?: DomainHost[];
+    /** The other registered domains on its first IPv4 address. */
+    cohostedDomains?: CohostedDomains;
+    /** What its home page said of itself, and the hosts it links to, when last read. */
+    web?: DomainWeb;
+    /** The registered domains whose home page redirects to it. */
+    redirects?: DomainRedirects;
+    /** The registered domains whose home page links to it. */
+    backlinks?: DomainBacklinks;
     trialExpired?: boolean;
     capReached?: boolean;
     /** The response exactly as it came off the wire, with its original names. */
@@ -177,7 +189,8 @@ const ASN_RESULT_NAMES: Record<keyof AsnLookupResponse, Exclude<keyof AsnResult,
 const DOMAIN_RESULT_NAMES: Record<keyof DomainLookupResponse, Exclude<keyof DomainResult, 'raw'>> = {
     domain: 'domain', is_registered: 'isRegistered', is_disposable: 'isDisposable', has_a: 'hasA',
     has_aaaa: 'hasAaaa', has_mx: 'hasMx', has_ns: 'hasNs', has_cname: 'hasCname', dns: 'dns',
-    ip_ranges: 'ipRanges', disposable: 'disposable', trial_expired: 'trialExpired',
+    ip_ranges: 'ipRanges', disposable: 'disposable', hosting: 'hosting', cohosted_domains: 'cohostedDomains',
+    web: 'web', redirects: 'redirects', backlinks: 'backlinks', trial_expired: 'trialExpired',
     cap_reached: 'capReached',
 };
 
