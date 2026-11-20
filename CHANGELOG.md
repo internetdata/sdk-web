@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff.
 
+## 1.3.3 - 2026-11-20
+
+### Fixes
+
+- Re-pin the spec to 2026.11.20: the trial without a count, and no per-minute limit ([`f94c69a`](https://github.com/internetdata/sdk-web/commit/f94c69af8017fed5c4c6cc2dcb32bbf4ff1e275c))
+
 ## 1.3.2 - 2026-11-19
 
 ### Fixes
