@@ -2,6 +2,13 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff.
 
+## 1.4.0 - 2026-11-20
+
+### Features
+
+- Read a paid domain answer's hosting, co-hosted domains, home page, redirects and backlinks ([`f3ae560`](https://github.com/internetdata/sdk-web/commit/f3ae56056b07467eba48c733855c4cd9770c5389))
+- README: the paid domain answer's new members, and usage without a period ([`a3981cb`](https://github.com/internetdata/sdk-web/commit/a3981cbe52bf9034c774b98a53e3b5251ec54c21))
+
 ## 1.3.3 - 2026-11-20
 
 ### Fixes
