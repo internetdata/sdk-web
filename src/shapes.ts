@@ -5,9 +5,9 @@
 import { hasMembers } from './transport.js';
 
 export const LOOKUP_MEMBERS = [
-    'ip', 'is_bogon', 'is_tor', 'is_relay', 'is_anycast', 'is_carrier', 'is_satellite', 'is_ssh', 'is_smtp',
-    'is_web', 'is_dns_resolver', 'is_bittorrent', 'tor', 'relay', 'location', 'asn', 'company', 'hostname',
-    'abuse',
+    'ip', 'is_bogon', 'is_tor', 'is_relay', 'is_bot', 'is_anycast', 'is_carrier', 'is_satellite', 'is_ssh',
+    'is_smtp', 'is_web', 'is_dns_resolver', 'is_bittorrent', 'tor', 'relay', 'location', 'asn', 'company',
+    'hostname', 'abuse',
 ] as const;
 export const WEB_DETAIL_MEMBERS = [
     'port', 'tls_ok', 'session_ok', 'status_code', 'server', 'location', 'title', 'cert_subject_cn',
@@ -17,8 +17,9 @@ export const LOCATION_MEMBERS = [
     'continent', 'continent_name', 'country', 'country_name', 'timezone', 'currency_code', 'currency_name',
     'currency_symbol', 'flag_emoji', 'flag_unicode',
 ] as const;
-export const ASN_MEMBERS = ['asn', 'name', 'domain', 'type', 'prefix'] as const;
+export const ASN_MEMBERS = ['asn', 'name', 'domain', 'type', 'prefix', 'country', 'rpki_status'] as const;
 export const COMPANY_MEMBERS = ['name', 'domain'] as const;
+export const USER_AGENT_VERDICT_MEMBERS = ['agent', 'kind', 'verdict'] as const;
 export const ABUSE_CONTACT_MEMBERS = ['email'] as const;
 export const WHOIS_MEMBERS = [
     'id', 'name', 'org', 'country', 'status', 'source', 'domain', 'abuse_email', 'asn',
@@ -63,13 +64,14 @@ const FLAG: Kind = 'boolean';
 
 export const LOOKUP_TYPES: Record<string, Kind> = {
     ip: 'string', is_bogon: FLAG, is_vpn: FLAG, is_tor: FLAG, is_relay: FLAG, is_resproxy: FLAG, is_dcproxy: FLAG,
-    is_mobproxy: FLAG, is_pubproxy: FLAG, is_hosting: FLAG, is_cdn: FLAG, is_anycast: FLAG, is_carrier: FLAG,
-    is_satellite: FLAG, is_ssh: FLAG, is_smtp: FLAG, is_web: FLAG, is_dns_resolver: FLAG, is_bittorrent: FLAG,
+    is_mobproxy: FLAG, is_pubproxy: FLAG, is_hosting: FLAG, is_cdn: FLAG, is_bot: FLAG, is_anycast: FLAG,
+    is_carrier: FLAG, is_satellite: FLAG, is_ssh: FLAG, is_smtp: FLAG, is_web: FLAG, is_dns_resolver: FLAG,
+    is_bittorrent: FLAG,
     vpn: 'object', tor: 'object', relay: 'object', resproxy: 'object', dcproxy: 'object', mobproxy: 'object',
-    pubproxy: 'object', hosting: 'object', cdn: 'object', carrier: 'object', satellite: 'object', ssh: 'object',
-    smtp: 'object', web: 'array', dns_resolver: 'object', bittorrent: 'object', location: 'object', asn: 'object',
+    pubproxy: 'object', hosting: 'object', cdn: 'object', bot: 'object', carrier: 'object', satellite: 'object',
+    ssh: 'object', smtp: 'object', web: 'array', dns_resolver: 'object', bittorrent: 'object', location: 'object', asn: 'object',
     company: 'object', hostname: 'string', abuse: 'object', whois: 'object', rwhois: 'object',
-    hosted_domains: 'object', trial_expired: FLAG, cap_reached: FLAG,
+    hosted_domains: 'object', user_agent: 'object', trial_expired: FLAG, cap_reached: FLAG,
 };
 export const CLASS_DETAIL_TYPES: Record<string, Kind> = {
     provider: 'string', provider_name: 'string', confidence: 'string', last_seen: 'string',
@@ -81,6 +83,13 @@ export const PROXY_DETAIL_TYPES: Record<string, Kind> = {
 export const PUBPROXY_DETAIL_TYPES: Record<string, Kind> = {
     entry: 'boolean', exit: 'boolean', protocols: 'array', num_ports: 'integer', num_proxies: 'integer',
     last_seen: 'string', last_usable: 'string',
+};
+export const BOT_DETAIL_TYPES: Record<string, Kind> = {
+    provider: 'string', provider_name: 'string', agents: 'array', categories: 'array', verified: 'boolean',
+    identity: 'string', verified_by: 'string', confidence: 'string', first_seen: 'string', last_seen: 'string',
+};
+export const USER_AGENT_VERDICT_TYPES: Record<string, Kind> = {
+    agent: 'string', kind: 'string', verdict: 'string',
 };
 export const CARRIER_DETAIL_TYPES: Record<string, Kind> = {
     name: 'string', mcc: 'string', mnc: 'string', country: 'string', confidence: 'string',
@@ -272,8 +281,8 @@ const DETAILS: [string, Record<string, Kind>][] = [
     ['vpn', CLASS_DETAIL_TYPES], ['tor', CLASS_DETAIL_TYPES], ['relay', CLASS_DETAIL_TYPES],
     ['resproxy', PROXY_DETAIL_TYPES], ['dcproxy', PROXY_DETAIL_TYPES], ['mobproxy', PROXY_DETAIL_TYPES],
     ['pubproxy', PUBPROXY_DETAIL_TYPES], ['hosting', CLASS_DETAIL_TYPES], ['cdn', CLASS_DETAIL_TYPES],
-    ['carrier', CARRIER_DETAIL_TYPES], ['satellite', SATELLITE_DETAIL_TYPES], ['ssh', SSH_DETAIL_TYPES],
-    ['smtp', SMTP_DETAIL_TYPES], ['dns_resolver', DNS_RESOLVER_DETAIL_TYPES],
+    ['bot', BOT_DETAIL_TYPES], ['carrier', CARRIER_DETAIL_TYPES], ['satellite', SATELLITE_DETAIL_TYPES],
+    ['ssh', SSH_DETAIL_TYPES], ['smtp', SMTP_DETAIL_TYPES], ['dns_resolver', DNS_RESOLVER_DETAIL_TYPES],
     ['bittorrent', BITTORRENT_DETAIL_TYPES],
 ];
 
@@ -293,6 +302,10 @@ export function isLookup(data: unknown): boolean {
         && DETAILS.every(([member, types]) => optional(data[member], (detail) => typed(detail, [], types)))
         && optional(data['pubproxy'], (pubproxy) => lists(pubproxy, 'protocols', isString))
         && optional(data['bittorrent'], (bittorrent) => lists(bittorrent, 'clients', isString))
+        && optional(data['bot'], (bot) => lists(bot, 'agents', isString) && lists(bot, 'categories', isString))
+        && optional(data['user_agent'], (verdict) => typed(
+            verdict, USER_AGENT_VERDICT_MEMBERS, USER_AGENT_VERDICT_TYPES,
+        ))
         && optional(data['web'], (web) => every(web, (row) => typed(row, WEB_DETAIL_MEMBERS, WEB_DETAIL_TYPES)))
         && optional(data['hosted_domains'], (hosted) => lists(hosted, 'domains', isString))
         && SHARED.every(([member, required, types]) => optional(

@@ -411,14 +411,14 @@ test('each checked member list is every required member of its generated type', 
         BatchLookupResponse: shapes.BATCH_MEMBERS,
         BatchLookupError: shapes.BATCH_ERROR_MEMBERS, Entitlement: shapes.ENTITLEMENT_MEMBERS,
         EntitlementApikey: shapes.ENTITLEMENT_APIKEY_MEMBERS, EntitlementPlan: shapes.ENTITLEMENT_PLAN_MEMBERS,
-        EntitlementUsage: shapes.ENTITLEMENT_USAGE_MEMBERS,
+        EntitlementUsage: shapes.ENTITLEMENT_USAGE_MEMBERS, UserAgentVerdict: shapes.USER_AGENT_VERDICT_MEMBERS,
     };
     for (const [name, list] of Object.entries(lists)) {
         assert.deepEqual([...list].sort(), required(name), name);
     }
     // A detail object requires nothing, which is what lets `{}` stand under a false flag.
     for (const name of ['ClassDetail', 'ProxyDetail', 'PubproxyDetail', 'CarrierDetail', 'SatelliteDetail',
-        'SshDetail', 'SmtpDetail', 'DnsResolverDetail', 'BitTorrentDetail', 'DisposableDetail']) {
+        'SshDetail', 'SmtpDetail', 'DnsResolverDetail', 'BitTorrentDetail', 'DisposableDetail', 'BotDetail']) {
         assert.deepEqual(required(name), [], name);
     }
 });
@@ -466,7 +466,8 @@ function typeTables(shapes) {
         DomainRedirects: shapes.DOMAIN_REDIRECTS_TYPES, DomainBacklinks: shapes.DOMAIN_BACKLINKS_TYPES,
         BatchLookupError: shapes.BATCH_ERROR_TYPES, Entitlement: shapes.ENTITLEMENT_TYPES,
         EntitlementApikey: shapes.ENTITLEMENT_APIKEY_TYPES, EntitlementPlan: shapes.ENTITLEMENT_PLAN_TYPES,
-        EntitlementUsage: shapes.ENTITLEMENT_USAGE_TYPES,
+        EntitlementUsage: shapes.ENTITLEMENT_USAGE_TYPES, BotDetail: shapes.BOT_DETAIL_TYPES,
+        UserAgentVerdict: shapes.USER_AGENT_VERDICT_TYPES,
     };
 }
 

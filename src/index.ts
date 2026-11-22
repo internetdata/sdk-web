@@ -14,5 +14,5 @@ export type {
     DnsResolverDetail, BitTorrentDetail, Location, Asn, Company, AbuseContact, Whois, Rwhois, HostedDomains,
     AsnPrefix, DomainDns, DnsAddressRecord, DnsMxRecord, DnsNsRecord, DnsCnameRecord, DomainIpRanges,
     DomainIpRange, DisposableDetail, DomainHost, CohostedDomains, DomainWeb, DomainWebLinks, DomainRedirects,
-    DomainBacklinks, Entitlement, EntitlementApikey, EntitlementPlan, EntitlementUsage,
+    DomainBacklinks, Entitlement, EntitlementApikey, EntitlementPlan, EntitlementUsage, BotDetail, UserAgentVerdict,
 } from './types.js';
