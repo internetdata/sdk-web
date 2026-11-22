@@ -2,6 +2,18 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff.
 
+## 1.5.0 - 2026-11-22
+
+### Features
+
+- Read whether a bot uses an address, and whose: isBot and bot ([`2df25fe`](https://github.com/internetdata/sdk-web/commit/2df25feba9c2f58ab0b988ed6e371029c00620a4))
+- README: the bot flag on every plan, and whose bot it is on a paid plan ([`b27316a`](https://github.com/internetdata/sdk-web/commit/b27316abd0bc1ec976d286ec000d8714bc0a284b))
+
+### Fixes
+
+- Refuse a cache TTL or size that is not a whole number from 1 ([`5cef7b7`](https://github.com/internetdata/sdk-web/commit/5cef7b7a859972cd6eee5d911814df4014b3c5cd))
+- Comments: the free plan counts its trial by the UTC month ([`8e8d205`](https://github.com/internetdata/sdk-web/commit/8e8d2056c3bde68c091461afef928ac199e02ec6))
+
 ## 1.4.0 - 2026-11-20
 
 ### Features
