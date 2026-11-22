@@ -30,7 +30,7 @@ It runs in Chrome and Edge 109, Firefox 115 ESR and Safari 16.4 or newer. TypeSc
 
 ## Usage
 
-**No API key needed to start.** Unlimited, the free plan, answers Tor, relay, anycast, carrier, satellite and the five service flags (SSH, SMTP, web, DNS resolver and BitTorrent), reverse DNS, country-level `location`, `asn`, the company's name and domain and the abuse email, with no daily or monthly cap, with a key or without one. In a page the address calling is the visitor's, so `myIp` tells you about the visitor:
+**No API key needed to start.** Unlimited, the free plan, answers Tor, relay, bot, anycast, carrier, satellite and the five service flags (SSH, SMTP, web, DNS resolver and BitTorrent), reverse DNS, country-level `location`, `asn`, the company's name and domain and the abuse email, with no daily or monthly cap, with a key or without one. In a page the address calling is the visitor's, so `myIp` tells you about the visitor:
 
 ```js
 import { InternetData } from 'internetdata-web';
@@ -57,6 +57,7 @@ const result = await client.lookup('146.70.116.130');
 console.log(result.isVpn);           // on a paid plan
 console.log(result.vpn?.provider);   // on a paid plan
 console.log(result.location.city);   // on a paid plan
+console.log(result.bot?.agents);     // ['Googlebot'] for a crawler's address, on a paid plan
 ```
 
 An extension can sign its user in rather than ask them to paste a key: see Sign in with OAuth below.
@@ -263,7 +264,7 @@ The library is ES2022 and needs only what a browser has, `fetch` and, for PKCE, 
 
 ### Absent is not false
 
-Unlimited leaves out `isVpn`, `isHosting`, `isCdn` and the four proxy flags, the detail behind them, and the paid members inside `location`, `asn`, `company` and `abuse`, such as `location.city`; a free-plan key's answer carries `trialExpired`, true once its trial is spent. A paid key's carries `capReached`, true once its organization's overage cap is reached, when the answer has Unlimited's fields and isn't billed. A field your key does not include is `undefined`, which means "not in your plan" rather than "checked, and no".
+Unlimited leaves out `isVpn`, `isHosting`, `isCdn` and the four proxy flags, the detail behind them, `bot` (whose bot it is, behind `isBot`), and the paid members inside `location`, `asn`, `company` and `abuse`, such as `location.city`; a free-plan key's answer carries `trialExpired`, true once its trial is spent. A paid key's carries `capReached`, true once its organization's overage cap is reached, when the answer has Unlimited's fields and isn't billed. A field your key does not include is `undefined`, which means "not in your plan" rather than "checked, and no".
 
 ```js
 result.isVpn ?? false            // when you only want the flag
