@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff.
 
+## 1.5.1 - 2026-11-23
+
+### Fixes
+
+- Re-pin the spec to 2026.11.22: whose bot an unverified address names ([`c0a586f`](https://github.com/internetdata/sdk-web/commit/c0a586f9de72a16a820d9e7294b98d49842699a7))
+
 ## 1.5.0 - 2026-11-22
 
 ### Features
