@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff.
 
+## 1.6.0 - 2026-11-24
+
+### Fixes
+
+- Read each first and last seen day as a date ([`0897941`](https://github.com/internetdata/sdk-web/commit/089794126963ebb48ebda6dd8368dadbac1e00af))
+
 ## 1.5.1 - 2026-11-23
 
 ### Fixes
