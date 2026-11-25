@@ -169,3 +169,31 @@ test("the CI key's batch of one is answered", { skip: NO_KEY }, async () => {
     assert.ok(!(answer instanceof Error), `8.8.4.4 failed: ${answer?.message}`);
     assert.equal(typeof answer.trialExpired, 'boolean');
 });
+
+// From 1.7.0 the client sends a visitor's user agent. Googlebot's own from one of
+// Google's crawler addresses: while the organization's trial lasts the answer
+// names the agent and says whether the address bears it out, in its three
+// documented keys, a batch entry's alike; after it, Unlimited's answer carries
+// none. Either way the plain answer carries none.
+const SENDS_USER_AGENT = INSTALLED_VERSION.localeCompare('1.7.0', undefined, { numeric: true }) >= 0;
+
+test("the CI key's user agent comes back as its verdict exactly while the trial lasts", {
+    skip: NO_KEY || (SENDS_USER_AGENT ? false : `internetdata-web@${INSTALLED_VERSION} sends no user agent`),
+}, async () => {
+    const googlebot = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
+    const crawler = '66.249.66.1';
+    const result = await clientFor(STAGING_API, stagingKey()).lookup(crawler, { userAgent: googlebot });
+    assert.equal('user_agent' in result.raw, !result.trialExpired, 'user_agent is served exactly while the trial lasts');
+    if (!result.trialExpired) {
+        assert.deepEqual(Object.keys(result.raw.user_agent).sort(), ['agent', 'kind', 'verdict']);
+        assert.deepEqual(result.userAgent, result.raw.user_agent);
+        assert.equal(result.userAgent.agent, 'Googlebot');
+        assert.equal(typeof result.userAgent.verdict, 'string');
+    }
+    const plain = await clientFor(STAGING_API, stagingKey()).lookup(crawler);
+    assert.ok(!('user_agent' in plain.raw), 'the plain answer carries none');
+    const batch = await clientFor(STAGING_API, stagingKey()).lookupBatch([crawler], { userAgents: { [crawler]: googlebot } });
+    const entry = batch.get(crawler);
+    assert.ok(!(entry instanceof Error), `${crawler} failed: ${entry?.message}`);
+    assert.equal('user_agent' in entry.raw, !entry.trialExpired, "a batch entry's user_agent likewise");
+});
