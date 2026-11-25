@@ -1,5 +1,5 @@
 export { InternetData, DEFAULT_BASE_URL } from './client.js';
-export type { Options, CacheOptions, LookupOptions, BatchOptions } from './client.js';
+export type { Options, CacheOptions, CallOptions, LookupOptions, BatchOptions } from './client.js';
 export type { CacheStore } from './store.js';
 export { OauthApi } from './oauth.js';
 export type { OauthOptions, AuthorizationUrlOptions, OauthMetadata, TokenResponse, Pkce } from './oauth.js';
