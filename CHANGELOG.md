@@ -2,6 +2,16 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff.
 
+## 1.7.0 - 2026-11-25
+
+### Features
+
+- Send a visitor's user agent with a lookup, myIp or a batch ([`159e2d6`](https://github.com/internetdata/sdk-web/commit/159e2d6859ed75a2376ac9795fc35e93be8611b1))
+
+### Fixes
+
+- Re-pin the spec to 2026.11.25: one paid plan, Data ([`750fb30`](https://github.com/internetdata/sdk-web/commit/750fb30de7c9563c6db475d0bcb5e5e45818fa78))
+
 ## 1.6.0 - 2026-11-24
 
 ### Fixes
