@@ -2,6 +2,12 @@
 
 What each release changed for you, newest first. Each line is a commit's summary, linked to its full description and diff.
 
+## 1.8.0 - 2026-11-26
+
+### Fixes
+
+- Read a keyless answer without the bot, carrier, satellite and service flags ([`13a1ff5`](https://github.com/internetdata/sdk-web/commit/13a1ff5e4097f5985685875e4d7fdf4c9894fb9d))
+
 ## 1.7.0 - 2026-11-25
 
 ### Features
