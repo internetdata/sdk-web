@@ -1,7 +1,6 @@
-import type { LookupResponse } from './generated/types.gen.js';
 import { isLookup } from './shapes.js';
 import { strictEncode } from './transport.js';
-import { toResult, type Result } from './types.js';
+import { toResult, type LookupResponse, type Result } from './types.js';
 
 /**
  * A persistent tier behind the client's in-memory cache, for answers that should

@@ -17,6 +17,13 @@ const KEY = 'test-key';
 
 const camel = (s) => s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
+// The flags Unlimited's answer no longer carries that Result types as a plain boolean, so
+// an absent one reads false: held at their public type until the next major. `is_bot` is
+// not here: its Result member is optional, so it reads absent as the corpus asks.
+const HELD_FLAGS = [
+    'is_carrier', 'is_satellite', 'is_ssh', 'is_smtp', 'is_web', 'is_dns_resolver', 'is_bittorrent',
+];
+
 // A served answer for any address: Unlimited's, as the corpus spells it.
 const UNLIMITED = data.lookup.find((c) => c.name === 'unlimited-answer').body;
 const served = (ip) => ({ ...UNLIMITED, ip: ip });
@@ -242,7 +249,12 @@ test('a lookup keeps absent apart from false across every plan shape', async () 
             assert.deepEqual(r[camel(k)], empty, `${c.name}: ${k} must be present and empty`);
         }
         for (const k of c.expect.absent) {
-            assert.ok(!(camel(k) in r), `${c.name}: ${k} must be ABSENT, not false or zero`);
+            if (HELD_FLAGS.includes(k)) {
+                assert.equal(r[camel(k)], false, `${c.name}: ${k} is typed boolean, so an absent one reads false`);
+                assert.ok(!(k in r.raw), `${c.name}: ${k} must be absent from raw`);
+            } else {
+                assert.ok(!(camel(k) in r), `${c.name}: ${k} must be ABSENT, not false or zero`);
+            }
         }
         for (const [o, members] of Object.entries(c.expect.absentIn ?? {})) {
             for (const k of members) {

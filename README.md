@@ -30,7 +30,7 @@ It runs in Chrome and Edge 109, Firefox 115 ESR and Safari 16.4 or newer. TypeSc
 
 ## Usage
 
-**No API key needed to start.** Unlimited, the free plan, answers Tor, relay, bot, anycast, carrier, satellite and the five service flags (SSH, SMTP, web, DNS resolver and BitTorrent), reverse DNS, country-level `location`, `asn`, the company's name and domain and the abuse email, with no daily or monthly cap, with a key or without one. In a page the address calling is the visitor's, so `myIp` tells you about the visitor:
+**No API key needed to start.** Unlimited, the free plan, answers Tor, relay and anycast, reverse DNS, country-level `location`, `asn`, the company's name and domain and the abuse email, with no daily or monthly cap, with a key or without one. In a page the address calling is the visitor's, so `myIp` tells you about the visitor:
 
 ```js
 import { InternetData } from 'internetdata-web';
@@ -48,7 +48,7 @@ console.log(result.company.name);       // who the address belongs to
 
 ### With an API key
 
-Where the key stays private (see above), a paid plan answers every field: `is_vpn`, `is_hosting`, `is_cdn` and the four proxy flags as well, city-level location, the whois records, `user_agent` (whether a user agent you send is borne out by the address: see below) and the detail behind each flag. Its quotas differ only in how many lookups they include, and a free account tries every field. Create a key in the [console](https://app.internetdata.io), then pass it in:
+Where the key stays private (see above), a paid plan answers every field: `is_vpn`, `is_hosting`, `is_cdn`, `is_bot`, `is_carrier`, `is_satellite`, the four proxy flags and the five service flags as well, city-level location, the whois records, `user_agent` (whether a user agent you send is borne out by the address: see below) and the detail behind each flag. Its quotas differ only in how many lookups they include, and a free account tries every field. Create a key in the [console](https://app.internetdata.io), then pass it in:
 
 ```js
 const client = new InternetData({ apiKey: 'your-api-key' });
@@ -283,11 +283,13 @@ The library is ES2022 and needs only what a browser has, `fetch` and, for PKCE, 
 
 ### Absent is not false
 
-Unlimited leaves out `isVpn`, `isHosting`, `isCdn` and the four proxy flags, the detail behind them, `bot` (whose bot it is, behind `isBot`), and the paid members inside `location`, `asn`, `company` and `abuse`, such as `location.city`; a free-plan key's answer carries `trialExpired`, true once its trial is spent. A paid key's carries `capReached`, true once its organization's overage cap is reached, when the answer has Unlimited's fields and isn't billed. A field your key does not include is `undefined`, which means "not in your plan" rather than "checked, and no".
+Unlimited leaves out `isVpn`, `isHosting`, `isCdn`, `isBot`, `isCarrier`, `isSatellite`, the four proxy flags and the five service flags (`isSsh`, `isSmtp`, `isWeb`, `isDnsResolver` and `isBittorrent`), the detail behind them, `bot` (whose bot it is, behind `isBot`), and the paid members inside `location`, `asn`, `company` and `abuse`, such as `location.city`; a free-plan key's answer carries `trialExpired`, true once its trial is spent. A paid key's carries `capReached`, true once its organization's overage cap is reached, when the answer has Unlimited's fields and isn't billed. A field your key does not include is `undefined`, which means "not in your plan" rather than "checked, and no". The one exception, until the next major release: `isCarrier`, `isSatellite` and the five service flags are typed `boolean`, so on Unlimited they read `false`, and `result.raw` shows they were not served.
 
 ```js
 result.isVpn ?? false            // when you only want the flag
 result.isVpn === undefined       // on Unlimited: not in your plan
+result.isBot === undefined       // likewise
+result.isSsh === false           // on Unlimited: read as false, though 'is_ssh' is not in result.raw
 result.trialExpired === true     // a free-plan key's trial is spent
 result.capReached === true       // a paid key is past its overage cap
 ```

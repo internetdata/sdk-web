@@ -23,12 +23,25 @@ export type {
 // They stay optional in these types, so such code still compiles; the client
 // still refuses an answer without them.
 
-/** The network announcing an address. Every answer carries `country` and `rpki_status`. */
-export type Asn = Omit<WireAsn, 'country' | 'rpki_status'> & Partial<Pick<WireAsn, 'country' | 'rpki_status'>>;
+// Flags the spec made optional in 2026.11.26, when Unlimited's answer dropped them. They keep the
+// type they had until the next major, so code that reads them still compiles.
+type HeldFlag = 'is_carrier' | 'is_satellite' | 'is_ssh' | 'is_smtp' | 'is_web' | 'is_dns_resolver'
+    | 'is_bittorrent';
 
-/** A lookup's answer as it came off the wire. Every answer carries `is_bot`. */
-export type LookupResponse = Omit<WireLookupResponse, 'asn' | 'is_bot'> & { asn: Asn }
-    & Partial<Pick<WireLookupResponse, 'is_bot'>>;
+/**
+ * The network announcing an address. Every answer carries `country` and `rpki_status`. `type` is a paid
+ * plan's: an Unlimited answer may omit it, though this type still says `string` until the next major.
+ */
+export type Asn = Omit<WireAsn, 'country' | 'rpki_status' | 'type'>
+    & Partial<Pick<WireAsn, 'country' | 'rpki_status'>> & Required<Pick<WireAsn, 'type'>>;
+
+/**
+ * A lookup's answer as it came off the wire. `is_bot` is optional here, and the seven flags after it are
+ * typed `boolean` until the next major although an Unlimited answer omits them: read them from `Result`,
+ * where an absent one is `false`.
+ */
+export type LookupResponse = Omit<WireLookupResponse, 'asn' | 'is_bot' | HeldFlag> & { asn: Asn }
+    & Partial<Pick<WireLookupResponse, 'is_bot'>> & Required<Pick<WireLookupResponse, HeldFlag>>;
 
 /** An address the domain resolves to, and the network announcing it. */
 export type DomainHost = Omit<WireDomainHost, 'asn'> & { asn: Asn };
@@ -66,11 +79,14 @@ export interface Result {
     isCdn?: boolean;
     /**
      * In Bot IP: an automated client's address, such as a search engine's or an AI
-     * company's crawler. Every answer carries it, on every plan; `bot` says whose.
-     * Optional in this type only so a `Result` written out by hand still compiles.
+     * company's crawler. On a paid plan or the trial; absent on Unlimited. `bot` says whose.
      */
     isBot?: boolean;
     isAnycast: boolean;
+    /**
+     * In Carrier IP, as the six flags after it are each in their own dataset: on a paid plan or the
+     * trial. Unlimited's answer omits them, and they read `false` there rather than absent until the next major.
+     */
     isCarrier: boolean;
     isSatellite: boolean;
     isSsh: boolean;
@@ -224,8 +240,18 @@ const DOMAIN_RESULT_NAMES: Record<keyof DomainLookupResponse, Exclude<keyof Doma
     cap_reached: 'capReached',
 };
 
+// Typed `boolean` on `Result` until the next major, so an answer without one reads `false`, as every
+// Unlimited answer said before 2026-11-26. `raw` still shows what was served.
+const HELD_FLAGS = [
+    'isCarrier', 'isSatellite', 'isSsh', 'isSmtp', 'isWeb', 'isDnsResolver', 'isBittorrent',
+] as const;
+
 export function toResult(body: LookupResponse): Result {
-    return renamed(body, RESULT_NAMES);
+    const result = renamed<LookupResponse, Result>(body, RESULT_NAMES);
+    for (const flag of HELD_FLAGS) {
+        result[flag] ??= false;
+    }
+    return result;
 }
 
 export function toAsnResult(body: AsnLookupResponse): AsnResult {

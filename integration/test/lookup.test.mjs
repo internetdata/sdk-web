@@ -22,12 +22,13 @@ const NO_KEY = skipForNoKey();
 // A stable hosting address, and the one the README teaches.
 const PROBE = '146.70.116.130';
 
-const FLAGS = [
-    'is_bogon', 'is_tor', 'is_relay', 'is_anycast', 'is_carrier', 'is_satellite', 'is_ssh', 'is_smtp', 'is_web',
-    'is_dns_resolver', 'is_bittorrent',
-];
+const FLAGS = ['is_bogon', 'is_tor', 'is_relay', 'is_anycast'];
 // Paid plans and the trial only: absent from an Unlimited answer.
 const PAID = ['is_vpn', 'is_hosting', 'vpn', 'hosting', 'whois', 'rwhois', 'hosted_domains'];
+// Paid too, though `Result` types the seven after `is_bot` as boolean until the next major: they read false.
+const PAID_FLAGS = [
+    'is_bot', 'is_carrier', 'is_satellite', 'is_ssh', 'is_smtp', 'is_web', 'is_dns_resolver', 'is_bittorrent',
+];
 const PAID_IN = { location: ['city', 'latitude'], company: ['type'], abuse: ['phone'] };
 
 const camel = (s) => s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
@@ -38,6 +39,10 @@ function assertUnlimited(result, label) {
         assert.equal(typeof result[camel(flag)], 'boolean', `${label}: ${flag} is required`);
     }
     assert.equal(result.isBogon, false, label);
+    for (const flag of PAID_FLAGS) {
+        assert.ok(!(flag in result.raw), `${label}: ${flag} is served without a key`);
+        assert.equal(result[camel(flag)], flag === 'is_bot' ? undefined : false, `${label}: ${flag}`);
+    }
     for (const member of PAID) {
         assert.ok(!(member in result.raw), `${label}: ${member} is served without a key`);
         assert.ok(!(camel(member) in result), `${label}: ${member} must be absent, not false or empty`);

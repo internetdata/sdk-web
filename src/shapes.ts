@@ -5,8 +5,7 @@
 import { hasMembers } from './transport.js';
 
 export const LOOKUP_MEMBERS = [
-    'ip', 'is_bogon', 'is_tor', 'is_relay', 'is_bot', 'is_anycast', 'is_carrier', 'is_satellite', 'is_ssh',
-    'is_smtp', 'is_web', 'is_dns_resolver', 'is_bittorrent', 'tor', 'relay', 'location', 'asn', 'company',
+    'ip', 'is_bogon', 'is_tor', 'is_relay', 'is_anycast', 'tor', 'relay', 'location', 'asn', 'company',
     'hostname', 'abuse',
 ] as const;
 export const WEB_DETAIL_MEMBERS = [
@@ -17,7 +16,7 @@ export const LOCATION_MEMBERS = [
     'continent', 'continent_name', 'country', 'country_name', 'timezone', 'currency_code', 'currency_name',
     'currency_symbol', 'flag_emoji', 'flag_unicode',
 ] as const;
-export const ASN_MEMBERS = ['asn', 'name', 'domain', 'type', 'prefix', 'country', 'rpki_status'] as const;
+export const ASN_MEMBERS = ['asn', 'name', 'domain', 'prefix', 'country', 'rpki_status'] as const;
 export const COMPANY_MEMBERS = ['name', 'domain'] as const;
 export const USER_AGENT_VERDICT_MEMBERS = ['agent', 'kind', 'verdict'] as const;
 export const ABUSE_CONTACT_MEMBERS = ['email'] as const;
@@ -52,6 +51,12 @@ export const ENTITLEMENT_MEMBERS = ['org_id', 'apikey', 'plan', 'usage'] as cons
 export const ENTITLEMENT_APIKEY_MEMBERS = ['id', 'allowed_cidrs'] as const;
 export const ENTITLEMENT_PLAN_MEMBERS = ['key', 'name', 'tier'] as const;
 export const ENTITLEMENT_USAGE_MEMBERS = ['requests', 'quota', 'window_start', 'window_end'] as const;
+
+// Members the spec no longer requires, which an answer may omit and may never send as null.
+export const PAID_FLAGS = [
+    'is_bot', 'is_carrier', 'is_satellite', 'is_ssh', 'is_smtp', 'is_web', 'is_dns_resolver', 'is_bittorrent',
+] as const;
+export const ASN_NOT_NULL = ['type'] as const;
 
 
 // Every member's type, nullable and optional ones included: one the spec requires
@@ -248,12 +253,19 @@ function isDay(year: string, month: string, day: string): boolean {
         && date.getUTCDate() === Number(day);
 }
 
+// A member in `notNull` may be absent but never null, as one the spec once required.
 function typed(
-    value: unknown, required: readonly string[], types: Record<string, Kind>,
+    value: unknown, required: readonly string[], types: Record<string, Kind>, notNull: readonly string[] = [],
 ): value is Record<string, unknown> {
     return hasMembers(value, required) && Object.entries(types).every(([member, kind]) => {
         const v = value[member];
-        return v === undefined || v === null ? !required.includes(member) : isKind(v, kind);
+        if (v === undefined) {
+            return !required.includes(member);
+        }
+        if (v === null) {
+            return !required.includes(member) && !notNull.includes(member);
+        }
+        return isKind(v, kind);
     });
 }
 
@@ -288,18 +300,18 @@ const DETAILS: [string, Record<string, Kind>][] = [
 ];
 
 // Required where the lookup itself requires them, and optional otherwise.
-const SHARED: [string, readonly string[], Record<string, Kind>][] = [
-    ['location', LOCATION_MEMBERS, LOCATION_TYPES],
-    ['asn', ASN_MEMBERS, ASN_TYPES],
-    ['company', COMPANY_MEMBERS, COMPANY_TYPES],
-    ['abuse', ABUSE_CONTACT_MEMBERS, ABUSE_CONTACT_TYPES],
-    ['whois', WHOIS_MEMBERS, WHOIS_TYPES],
-    ['rwhois', RWHOIS_MEMBERS, RWHOIS_TYPES],
-    ['hosted_domains', HOSTED_DOMAINS_MEMBERS, HOSTED_DOMAINS_TYPES],
+const SHARED: [string, readonly string[], Record<string, Kind>, readonly string[]][] = [
+    ['location', LOCATION_MEMBERS, LOCATION_TYPES, []],
+    ['asn', ASN_MEMBERS, ASN_TYPES, ASN_NOT_NULL],
+    ['company', COMPANY_MEMBERS, COMPANY_TYPES, []],
+    ['abuse', ABUSE_CONTACT_MEMBERS, ABUSE_CONTACT_TYPES, []],
+    ['whois', WHOIS_MEMBERS, WHOIS_TYPES, []],
+    ['rwhois', RWHOIS_MEMBERS, RWHOIS_TYPES, []],
+    ['hosted_domains', HOSTED_DOMAINS_MEMBERS, HOSTED_DOMAINS_TYPES, []],
 ];
 
 export function isLookup(data: unknown): boolean {
-    return typed(data, LOOKUP_MEMBERS, LOOKUP_TYPES)
+    return typed(data, LOOKUP_MEMBERS, LOOKUP_TYPES, PAID_FLAGS)
         && DETAILS.every(([member, types]) => optional(data[member], (detail) => typed(detail, [], types)))
         && optional(data['pubproxy'], (pubproxy) => lists(pubproxy, 'protocols', isString))
         && optional(data['bittorrent'], (bittorrent) => lists(bittorrent, 'clients', isString))
@@ -309,8 +321,8 @@ export function isLookup(data: unknown): boolean {
         ))
         && optional(data['web'], (web) => every(web, (row) => typed(row, WEB_DETAIL_MEMBERS, WEB_DETAIL_TYPES)))
         && optional(data['hosted_domains'], (hosted) => lists(hosted, 'domains', isString))
-        && SHARED.every(([member, required, types]) => optional(
-            data[member], (object) => typed(object, required, types),
+        && SHARED.every(([member, required, types, notNull]) => optional(
+            data[member], (object) => typed(object, required, types, notNull),
         ));
 }
 
@@ -340,7 +352,7 @@ export function isDomainLookup(data: unknown): boolean {
         && optional(data['disposable'], (d) => typed(d, [], DISPOSABLE_DETAIL_TYPES)
             && lists(d, 'providers', isString))
         && optional(data['hosting'], (hosting) => every(hosting, (h) => typed(h, DOMAIN_HOST_MEMBERS, DOMAIN_HOST_TYPES)
-            && typed(h['asn'], ASN_MEMBERS, ASN_TYPES)))
+            && typed(h['asn'], ASN_MEMBERS, ASN_TYPES, ASN_NOT_NULL)))
         && optional(data['cohosted_domains'], (c) => typed(c, COHOSTED_DOMAINS_MEMBERS, COHOSTED_DOMAINS_TYPES)
             && every(c['domains'], isString))
         && optional(data['web'], (web) => typed(web, DOMAIN_WEB_MEMBERS, DOMAIN_WEB_TYPES)

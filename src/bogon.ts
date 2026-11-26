@@ -1,6 +1,5 @@
 import { BOGON_V4, BOGON_V6 } from './bogons.gen.js';
-import type { LookupResponse } from './generated/types.gen.js';
-import { toResult, type Result } from './types.js';
+import { toResult, type LookupResponse, type Result } from './types.js';
 
 /**
  * Whether an address is a bogon: private, loopback, link-local, documentation,

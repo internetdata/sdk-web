@@ -7,7 +7,7 @@ import {
     lookupAsn, lookupBatch, lookupDomain, lookupIp, lookupMyIp, myEntitlement,
 } from './generated/sdk.gen.js';
 import type {
-    AsnLookupResponse, BatchLookupRequest, BatchLookupResponse, DomainLookupResponse, Entitlement, LookupResponse,
+    AsnLookupResponse, BatchLookupRequest, BatchLookupResponse, Entitlement,
 } from './generated/types.gen.js';
 
 import { bogonResult, isAddress, isBogon, unmapped } from './bogon.js';
@@ -19,7 +19,8 @@ import {
     asError, checkConcurrency, checkRetries, checkTimeout, deadline, readable, strictEncode, withRetry,
 } from './transport.js';
 import {
-    toAsnResult, toDomainResult, toResult, type AsnResult, type DomainResult, type Result,
+    toAsnResult, toDomainResult, toResult, type AsnResult, type DomainLookupResponse, type DomainResult,
+    type LookupResponse, type Result,
 } from './types.js';
 
 export const DEFAULT_BASE_URL = 'https://api.internetdata.io';
