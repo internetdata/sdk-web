@@ -63,8 +63,9 @@ export class StoreTier {
 
 /**
  * How long an answer stays cached: the TTL, or at most a minute for one marked
- * `trialExpired` or `capReached`, which a new UTC month or a raised cap ends. Still
- * cached, so a busy page past its trial does not send every repeat to the API.
+ * `trialExpired` or `capReached`, which an upgrade, a raised cap or a paid plan's new
+ * window ends. Still cached, so a busy page past its trial does not send every repeat
+ * to the API.
  */
 export function lifeMs(result: Result, ttlMs: number): number {
     if (result.trialExpired === true || result.capReached === true) {
