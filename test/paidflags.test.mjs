@@ -23,6 +23,7 @@ const HELD = FLAGS.filter((flag) => flag !== 'is_bot');
 const camel = (s) => s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
 const UNLIMITED = data.lookup.find((c) => c.name === 'unlimited-answer').body;
+const PAID_ASN = data.lookup.find((c) => c.name === 'paid-full-shape').body.asn;
 const DOMAIN_PAID = data.lookup.find((c) => c.name === 'domain-paid-answer').body;
 const served = (ip, extra = {}) => ({ ...UNLIMITED, ip: ip, ...extra });
 const without = (object, member) => Object.fromEntries(Object.entries(object).filter(([k]) => k !== member));
@@ -126,9 +127,10 @@ test('a cached answer without the flags reads false from the persistent store as
 });
 
 test('the asn type is read when served, may be absent, and is refused when it is no string', async () => {
-    const asn = UNLIMITED.asn;
+    assert.ok(!('type' in UNLIMITED.asn), "the corpus's Unlimited answer carries asn.type");
+    const asn = PAID_ASN;
     assert.equal(typeof asn.type, 'string');
-    const present = await clientFor(lookupReply({})).lookup(IP);
+    const present = await clientFor(lookupReply({ asn: asn })).lookup(IP);
     assert.equal(present.asn.type, asn.type);
 
     const absent = await clientFor(lookupReply({ asn: without(asn, 'type') })).lookup(IP);
